@@ -70,7 +70,7 @@ internal class MockFriendImpl(
         val src = newMsgSrc(true) { ids, internalIds, time ->
             OnlineMsgSrcFromFriend(ids, internalIds, time, message, bot, this)
         }
-        val msg = src plusMsg message
+        val msg = src withMessage message
         FriendMessageEvent(this, msg, src.time).broadcast()
         return msg
     }

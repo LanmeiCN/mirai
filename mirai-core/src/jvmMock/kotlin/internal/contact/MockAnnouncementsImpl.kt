@@ -37,7 +37,7 @@ internal class MockAnnouncementsImpl(
 
     override suspend fun get(fid: String): OnlineAnnouncement? = announcements[fid]
 
-    override fun publish(announcement: MockOnlineAnnouncement) {
+    override fun putDirect(announcement: MockOnlineAnnouncement) {
         val annoc = if (announcement.fid.isEmpty()) {
             announcement.copy(fid = UUID.randomUUID().toString())
         } else announcement
@@ -58,7 +58,7 @@ internal class MockAnnouncementsImpl(
             confirmedMembersCount = 0,
             publicationTime = currentTimeSeconds()
         )
-        publish(onac)
+        putDirect(onac)
         return onac
     }
 

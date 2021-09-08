@@ -175,9 +175,3 @@ public suspend fun ExternalResource.mockUploadAsOnlineAudio(bot: MockBot): Onlin
     return bot.uploadOnlineAudio(this)
 }
 
-public infix fun String.plusHttpPath(subpath: String): String {
-
-    if (this[this.lastIndex] == '/') return this + subpath
-
-    return "$this/$subpath"
-}

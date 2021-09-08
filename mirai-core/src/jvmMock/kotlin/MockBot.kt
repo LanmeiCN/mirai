@@ -7,6 +7,8 @@
  * https://github.com/mamoe/mirai/blob/dev/LICENSE
  */
 
+@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+
 package net.mamoe.mirai.mock
 
 import net.mamoe.kjbb.JvmBlockingBridge
@@ -22,7 +24,12 @@ import net.mamoe.mirai.mock.fsserver.TmpFsServer
 import net.mamoe.mirai.mock.userprofile.UserProfileService
 import net.mamoe.mirai.mock.utils.NameGenerator
 import net.mamoe.mirai.utils.ExternalResource
+import net.mamoe.mirai.utils.JavaFriendlyAPI
 import net.mamoe.mirai.utils.cast
+import java.util.function.Consumer
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
+import kotlin.internal.LowPriorityInOverloadResolution
 
 @Suppress("unused")
 @JvmBlockingBridge
@@ -71,6 +78,14 @@ public interface MockBot : Bot {
     public fun addGroup(id: Long, uin: Long, name: String): MockGroup
 
     @MockBotDSL
+    @JavaFriendlyAPI
+    @LowPriorityInOverloadResolution
+    public fun addGroup(id: Long, name: String, action: Consumer<MockGroup>): MockBot {
+        action.accept(addGroup(id, name))
+        return this
+    }
+
+    @MockBotDSL
     public fun addFriend(id: Long, name: String): MockFriend
 
     @MockBotDSL
@@ -78,4 +93,12 @@ public interface MockBot : Bot {
 
     @MockBotDSL
     public suspend fun uploadOnlineAudio(resource: ExternalResource): OnlineAudio
+}
+
+@MockBotDSL
+public inline fun MockBot.addGroup(id: Long, name: String, action: MockGroup.() -> Unit): MockBot {
+    contract { callsInPlace(action, InvocationKind.EXACTLY_ONCE) }
+    return apply {
+        addGroup(id, name).also(action)
+    }
 }

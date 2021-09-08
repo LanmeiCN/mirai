@@ -7,6 +7,8 @@
  * https://github.com/mamoe/mirai/blob/dev/LICENSE
  */
 
+@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+
 package net.mamoe.mirai.mock.contact
 
 import net.mamoe.kjbb.JvmBlockingBridge
@@ -21,12 +23,18 @@ import net.mamoe.mirai.message.data.MessageChain
 import net.mamoe.mirai.mock.MockBot
 import net.mamoe.mirai.mock.MockBotDSL
 import net.mamoe.mirai.mock.contact.announcement.MockAnnouncements
+import net.mamoe.mirai.mock.userprofile.MockMemberInfoBuilder
+import net.mamoe.mirai.utils.JavaFriendlyAPI
 import net.mamoe.mirai.utils.cast
+import java.util.function.Consumer
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
+import kotlin.internal.LowPriorityInOverloadResolution
 import kotlin.random.Random
 
 @JvmBlockingBridge
 public interface MockGroup : Group, MockContact {
-    public val uin: Long
+    public var uin: Long
     override val bot: MockBot
     override val members: ContactList<MockNormalMember>
     override val owner: MockNormalMember
@@ -38,6 +46,13 @@ public interface MockGroup : Group, MockContact {
 
     @MockBotDSL
     public fun addMember0(mockMember: MemberInfo): MockNormalMember
+
+    @MockBotDSL
+    @JavaFriendlyAPI
+    @LowPriorityInOverloadResolution
+    public fun addMember(id: Long, nick: String, action: Consumer<MockMemberInfoBuilder>): MockGroup {
+        return addMember(MockMemberInfoBuilder().uin(id).nick(nick).also { action.accept(it) }.build())
+    }
 
     // Will have event broadcast
     @MockBotDSL
@@ -81,4 +96,10 @@ public interface MockGroup : Group, MockContact {
             invitor.takeIf { it != 0L },
         ).broadcast()
     }
+}
+
+@MockBotDSL
+public inline fun MockGroup.addMember(id: Long, nick: String, action: MockMemberInfoBuilder.() -> Unit): MockGroup {
+    contract { callsInPlace(action, InvocationKind.EXACTLY_ONCE) }
+    return addMember(MockMemberInfoBuilder().uin(id).nick(nick).also(action).build())
 }

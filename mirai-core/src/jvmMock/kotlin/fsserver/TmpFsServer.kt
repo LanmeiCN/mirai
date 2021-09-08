@@ -13,8 +13,8 @@ import com.google.common.jimfs.Configuration
 import com.google.common.jimfs.Jimfs
 import net.mamoe.kjbb.JvmBlockingBridge
 import net.mamoe.mirai.mock.internal.remotefile.FsServerImpl
-import net.mamoe.mirai.mock.utils.plusHttpPath
 import net.mamoe.mirai.utils.ExternalResource
+import net.mamoe.mirai.utils.plusHttpSubpath
 import java.io.Closeable
 import java.nio.file.FileSystem
 
@@ -38,7 +38,7 @@ public interface TmpFsServer : Closeable {
     public fun startup()
 
     public fun getHttpUrl(id: String): String {
-        return httpRoot plusHttpPath id
+        return httpRoot.plusHttpSubpath(id)
     }
 
     public companion object {

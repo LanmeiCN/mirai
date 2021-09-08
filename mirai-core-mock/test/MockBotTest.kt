@@ -272,7 +272,7 @@ internal class MockBotTest {
     @Test
     internal fun testGroupAnnouncements() = runBlocking<Unit> {
         val group = bot.addGroup(8484541, "87")
-        group.announcements.publish(
+        group.announcements.putDirect(
             MockOnlineAnnouncement(
                 content = "Hello World",
                 parameters = AnnouncementParameters.DEFAULT,

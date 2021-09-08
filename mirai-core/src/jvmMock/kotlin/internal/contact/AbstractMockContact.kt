@@ -45,7 +45,7 @@ internal abstract class AbstractMockContact(
         val msg = broadcastMessagePreSendEvent(message) { _, _ -> newMessagePreSend(message) }
 
         val source = newMessageSource(msg)
-        val response = source plusMsg msg
+        val response = source withMessage msg
 
         logMessageSent(msg)
 

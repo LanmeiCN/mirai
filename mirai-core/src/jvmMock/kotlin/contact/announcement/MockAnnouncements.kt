@@ -16,9 +16,10 @@ import net.mamoe.mirai.contact.announcement.Announcements
 import net.mamoe.mirai.contact.announcement.OnlineAnnouncement
 import net.mamoe.mirai.mock.MockBotDSL
 
+// TODO
 public interface MockAnnouncements : Announcements {
     @MockBotDSL
-    public fun publish(announcement: MockOnlineAnnouncement)
+    public fun putDirect(announcement: MockOnlineAnnouncement)
 }
 
 public data class MockOnlineAnnouncement(

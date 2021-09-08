@@ -63,7 +63,7 @@ internal class MockStrangerImpl(
         val src = newMsgSrc(true) { ids, internalIds, time ->
             OnlineMsgSrcFromStranger(ids, internalIds, time, message, bot, this)
         }
-        val msg = src plusMsg message
+        val msg = src withMessage message
         StrangerMessageEvent(this, msg, src.time).broadcast()
         return msg
     }

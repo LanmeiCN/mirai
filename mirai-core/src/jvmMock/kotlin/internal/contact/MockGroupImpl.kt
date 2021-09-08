@@ -38,7 +38,7 @@ internal class MockGroupImpl(
     coroutineContext: CoroutineContext,
     bot: MockBot,
     id: Long,
-    override val uin: Long,
+    override var uin: Long,
     name: String,
 ) : AbstractMockContact(
     coroutineContext, bot, id

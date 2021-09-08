@@ -18,11 +18,13 @@ import net.mamoe.mirai.mock.userprofile.UserProfileService
 import net.mamoe.mirai.mock.utils.NameGenerator
 import net.mamoe.mirai.utils.BotConfiguration
 import net.mamoe.mirai.utils.lateinitMutableProperty
+import kotlin.math.absoluteValue
+import kotlin.random.Random
 
 internal class MockBotFactoryImpl : MockBotFactory {
     override fun newMockBotBuilder(): MockBotFactory.BotBuilder {
         return object : MockBotFactory.BotBuilder {
-            var id: Long = 0
+            var id: Long = Random.nextLong().absoluteValue
             var nick_: String by lateinitMutableProperty {
                 "Mock Bot $id"
             }

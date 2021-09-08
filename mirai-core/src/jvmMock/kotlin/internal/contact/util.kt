@@ -20,8 +20,8 @@ import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.mock.MockBot
 import net.mamoe.mirai.mock.contact.MockGroup
 import net.mamoe.mirai.mock.utils.mock
-import net.mamoe.mirai.mock.utils.plusHttpPath
 import net.mamoe.mirai.utils.ExternalResource
+import net.mamoe.mirai.utils.plusHttpSubpath
 import net.mamoe.mirai.utils.toUHexString
 
 internal fun Member.requireBotPermissionHigherThanThis(msg: String) {
@@ -30,8 +30,8 @@ internal fun Member.requireBotPermissionHigherThanThis(msg: String) {
     throw PermissionDeniedException("bot current permission ${group.botPermission} can't modify $id($permission), $msg")
 }
 
-internal infix fun MessageSource.plusMsg(msg: Message): MessageChain = buildMessageChain {
-    add(this@plusMsg)
+internal infix fun MessageSource.withMessage(msg: Message): MessageChain = buildMessageChain {
+    add(this@withMessage)
     if (msg is MessageChain) {
         msg.forEach { sub ->
             if (sub !is MessageSource) {
@@ -93,6 +93,6 @@ internal class MockImage(
     private val urlPath: String,
 ) : GroupImage(), DeferredOriginUrlAware {
     override fun getUrl(bot: Bot): String {
-        return bot.mock().tmpFsServer.httpRoot plusHttpPath urlPath
+        return bot.mock().tmpFsServer.httpRoot.plusHttpSubpath(urlPath)
     }
 }
