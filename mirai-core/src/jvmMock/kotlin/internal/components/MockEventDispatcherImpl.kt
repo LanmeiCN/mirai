@@ -22,6 +22,13 @@ import net.mamoe.mirai.utils.TestOnly
 import net.mamoe.mirai.utils.runUnwrapCancellationException
 import kotlin.coroutines.CoroutineContext
 
+/*
+
+Copied from:
+
+mirai-core/src/commonTest/kotlin/network/framework/components/EventDispatcherImpl.kt
+
+ */
 internal open class MockEventDispatcherImpl(
     lifecycleContext: CoroutineContext,
     logger: MiraiLogger,

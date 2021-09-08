@@ -70,6 +70,7 @@ internal class MockBotImpl(
             }
         }
         tmpFsServer.startup()
+        msgDatabase.connect()
     }
 
     override val components: ComponentStorage by lazy {

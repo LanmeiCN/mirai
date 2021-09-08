@@ -26,11 +26,19 @@ public interface MockNormalMember : NormalMember, MockMember {
     override var joinTimestamp: Int
     override var muteTimeRemaining: Int
 
+    /**
+     * 广播该成员加入了群
+     */
     @MockBotDSL
     public suspend fun broadcastMemberJoinEvent() {
         broadcastMemberJoinEvent(null)
     }
 
+    /**
+     * 广播该成员加入了群
+     *
+     * @param invitor 邀请者, 当邀请者不为 `null` 时广播 [MemberJoinEvent.Invite]
+     */
     @MockBotDSL
     public suspend fun broadcastMemberJoinEvent(invitor: NormalMember?) {
         if (invitor == null) {
@@ -40,6 +48,9 @@ public interface MockNormalMember : NormalMember, MockMember {
         }.broadcast()
     }
 
+    /**
+     * 广播该群员主动离开了群
+     */
     @MockBotDSL
     public suspend fun broadcastMemberLeave() {
         if (group.members.delegate.remove(this)) {
@@ -48,6 +59,9 @@ public interface MockNormalMember : NormalMember, MockMember {
         }
     }
 
+    /**
+     * 广播该群员将 [bot] 踢出了群聊, 并同时在 bot 的群聊列表里删除该群
+     */
     @MockBotDSL
     public suspend fun broadcastKickBot() {
         if (bot.groups.delegate.remove(group)) {

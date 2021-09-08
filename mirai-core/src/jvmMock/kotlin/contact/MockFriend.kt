@@ -22,11 +22,17 @@ public interface MockFriend : Friend, MockContact {
     override var nick: String
     override var remark: String
 
+    /**
+     * 广播好友添加事件
+     */
     @MockBotDSL
     public suspend fun broadcastFriendAddEvent(): FriendAddEvent {
         return FriendAddEvent(this).broadcast()
     }
 
+    /**
+     * 广播好友邀请 [bot] 加入一个群聊的事件
+     */
     @MockBotDSL
     public suspend fun broadcastInviteBotJoinGroupRequestEvent(
         groupId: Long, groupName: String,
@@ -41,6 +47,12 @@ public interface MockFriend : Friend, MockContact {
         ).broadcast()
     }
 
+    /**
+     * 广播好友主动删除 [bot] 好友的事件
+     *
+     * 即使该函数体实现为 [delete], 也请使用该方法广播 **bot 被好友删除**，
+     * 以确保不会受到未来的事件架构变更带来的影响
+     */
     @MockBotDSL
     public suspend fun broadcastFriendDelete() {
         delete()

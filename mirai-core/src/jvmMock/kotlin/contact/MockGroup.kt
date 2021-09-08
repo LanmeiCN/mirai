@@ -41,12 +41,15 @@ public interface MockGroup : Group, MockContact {
     override val botAsMember: MockNormalMember
     override val announcements: MockAnnouncements
 
+    /** 添加一位成员, 该操作不会广播任何事件 */
     @MockBotDSL
     public fun addMember(mockMember: MemberInfo): MockGroup //  chain call
 
+    /** 添加一位成员, 该操作不会广播任何事件 */
     @MockBotDSL
     public fun addMember0(mockMember: MemberInfo): MockNormalMember
 
+    /** 添加一位成员, 该操作不会广播任何事件 */
     @MockBotDSL
     @JavaFriendlyAPI
     @LowPriorityInOverloadResolution
@@ -79,6 +82,9 @@ public interface MockGroup : Group, MockContact {
         throw UnsupportedOperationException("Group cannot saying a message")
     }
 
+    /**
+     * 主动广播有新成员加入的事件
+     */
     @MockBotDSL
     public suspend fun broadcastNewMemberJoinEvent(
         requester: Long,
@@ -96,8 +102,11 @@ public interface MockGroup : Group, MockContact {
             invitor.takeIf { it != 0L },
         ).broadcast()
     }
+
+    // TODO: broadcastNewMemberJoinRequestEvent
 }
 
+/** 添加一位成员, 该操作不会广播任何事件 */
 @MockBotDSL
 public inline fun MockGroup.addMember(id: Long, nick: String, action: MockMemberInfoBuilder.() -> Unit): MockGroup {
     contract { callsInPlace(action, InvocationKind.EXACTLY_ONCE) }

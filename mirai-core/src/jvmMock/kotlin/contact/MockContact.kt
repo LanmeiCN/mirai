@@ -11,11 +11,8 @@ package net.mamoe.mirai.mock.contact
 
 import net.mamoe.kjbb.JvmBlockingBridge
 import net.mamoe.mirai.contact.Contact
-import net.mamoe.mirai.message.MessageReceipt
-import net.mamoe.mirai.message.data.Message
-import net.mamoe.mirai.message.data.MessageChain
-import net.mamoe.mirai.message.data.PlainText
-import net.mamoe.mirai.message.data.toMessageChain
+import net.mamoe.mirai.event.events.GroupMessageEvent
+import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.mock.MockBot
 import net.mamoe.mirai.mock.MockBotDSL
 
@@ -24,6 +21,13 @@ import net.mamoe.mirai.mock.MockBotDSL
 public interface MockContact : Contact {
     override val bot: MockBot
 
+
+    /**
+     * 令 [MockContact] 发出一条信息, 并广播相关的消息事件 (如 [GroupMessageEvent])
+     *
+     * @return 返回 [MockContact] 发出的消息 (包含 [MessageSource]),
+     *         可用于测试消息发出后马上撤回 `says().recall()`
+     */
     @MockBotDSL
     public suspend infix fun says(message: MessageChain): MessageChain
 

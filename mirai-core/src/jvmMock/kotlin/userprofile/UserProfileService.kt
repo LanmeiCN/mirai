@@ -9,19 +9,31 @@
 
 package net.mamoe.mirai.mock.userprofile
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import net.mamoe.kjbb.JvmBlockingBridge
+import net.mamoe.mirai.IMirai
 import net.mamoe.mirai.data.UserProfile
 import net.mamoe.mirai.utils.runBIO
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
+/**
+ * 用于资料服务, 用于 [IMirai.queryProfile] 查询用户资料
+ *
+ * implementation note: Java 请实现 [UserProfileServiceJ]
+ */
 @JvmBlockingBridge
 public interface UserProfileService {
     public suspend fun doQueryUserProfile(id: Long): UserProfile
 
+    /**
+     * 将 [id] 的用户资料指定为 [profile]
+     *
+     * implementation note:
+     *
+     * 框架内部并不会使用此接口, 该接口是设计于测试单元动态注册 [UserProfile],
+     * 如无调用此接口的需求可以实现为 `throw new UnsupportedOperationException()`
+     */
     public suspend fun putUserProfile(id: Long, profile: UserProfile)
 
     public companion object {
@@ -32,6 +44,12 @@ public interface UserProfileService {
     }
 }
 
+/**
+ * 用于资料服务, 用于 [IMirai.queryProfile] 查询用户资料
+ *
+ * 该接口是为了方便 Java 实现 [UserProfileService],
+ * kotlin 请实现 [UserProfileService]
+ */
 @Suppress("ILLEGAL_JVM_NAME", "INAPPLICABLE_JVM_NAME")
 public interface UserProfileServiceJ : UserProfileService {
     override suspend fun doQueryUserProfile(id: Long): UserProfile {

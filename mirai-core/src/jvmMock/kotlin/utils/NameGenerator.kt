@@ -11,6 +11,12 @@ package net.mamoe.mirai.mock.utils
 
 import java.util.concurrent.atomic.AtomicInteger
 
+/**
+ * 名称生成器
+ *
+ * 部分事件没有 `nick`, `name` 等相关的字段以确定名字,
+ * [NameGenerator] 的作用就是在无法确定一个准确的名字的时候生成一个默认的名字
+ */
 public interface NameGenerator {
     public fun nextGroupName(): String
     public fun nextFriendName(): String
