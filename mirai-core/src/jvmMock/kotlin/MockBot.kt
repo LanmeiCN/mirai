@@ -27,8 +27,6 @@ import net.mamoe.mirai.utils.cast
 @Suppress("unused")
 @JvmBlockingBridge
 public interface MockBot : Bot {
-    public suspend fun doRelogin()
-    public fun destroy()
 
 
     /// Contract API override
@@ -57,13 +55,14 @@ public interface MockBot : Bot {
     override val asFriend: MockFriend
     override val asStranger: MockStranger
 
-    /// Mock Contract API
     /// All mock api will not broadcast event
 
     public val nameGenerator: NameGenerator
     public val tmpFsServer: TmpFsServer
     public val msgDatabase: MessageDatabase
     public val userProfileService: UserProfileService
+
+    /// Mock Contact API
 
     @MockBotDSL
     public fun addGroup(id: Long, name: String): MockGroup

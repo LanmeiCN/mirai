@@ -15,7 +15,7 @@ import net.mamoe.mirai.mock.internal.db.MsgDatabaseImpl
 import net.mamoe.mirai.utils.toLongUnsigned
 
 public interface MessageDatabase {
-    // implement note: concurrent method
+    // implementation note: thread-safe
     public fun newMessageInfo(
         sender: Long, subject: Long, kind: MessageSourceKind
     ): MessageInfo

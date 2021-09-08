@@ -19,7 +19,7 @@ import kotlin.test.assertEquals
 
 internal class MsgDbTest {
     @Test
-    fun testIdConversation() {
+    fun testIdConversion() {
         repeat(50) {
             val id1 = Random.nextInt()
             val id2 = Random.nextInt()

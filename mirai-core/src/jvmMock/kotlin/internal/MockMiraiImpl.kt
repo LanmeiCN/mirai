@@ -10,22 +10,23 @@
 package net.mamoe.mirai.mock.internal
 
 import net.mamoe.mirai.Bot
-import net.mamoe.mirai.contact.Contact
-import net.mamoe.mirai.contact.ContactOrBot
-import net.mamoe.mirai.contact.MemberPermission
-import net.mamoe.mirai.contact.getMember
+import net.mamoe.mirai.BotFactory
+import net.mamoe.mirai.contact.*
+import net.mamoe.mirai.data.FriendInfo
+import net.mamoe.mirai.data.StrangerInfo
 import net.mamoe.mirai.data.UserProfile
 import net.mamoe.mirai.event.broadcast
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.internal.MiraiImpl
 import net.mamoe.mirai.message.action.Nudge
-import net.mamoe.mirai.message.data.MessageSource
-import net.mamoe.mirai.message.data.MessageSourceKind
-import net.mamoe.mirai.message.data.OfflineMessageSource
-import net.mamoe.mirai.message.data.OnlineMessageSource
+import net.mamoe.mirai.message.data.*
+import net.mamoe.mirai.mock.MockBotFactory
 import net.mamoe.mirai.mock.contact.MockGroup
 import net.mamoe.mirai.mock.database.queryMessageInfo
 import net.mamoe.mirai.mock.internal.contact.AQQ_RECALL_FAILED_MESSAGE
+import net.mamoe.mirai.mock.internal.contact.MockFriendImpl
+import net.mamoe.mirai.mock.internal.contact.MockImage
+import net.mamoe.mirai.mock.internal.contact.MockStrangerImpl
 import net.mamoe.mirai.mock.utils.mock
 import net.mamoe.mirai.mock.utils.simpleMemberInfo
 import net.mamoe.mirai.utils.currentTimeSeconds
@@ -277,5 +278,43 @@ internal class MockMiraiImpl : MiraiImpl() {
 
     override suspend fun queryProfile(bot: Bot, targetId: Long): UserProfile {
         return bot.mock().userProfileService.doQueryUserProfile(targetId)
+    }
+
+    override val BotFactory: BotFactory get() = MockBotFactory
+
+    /*override suspend fun getGroupVoiceDownloadUrl(bot: Bot, md5: ByteArray, groupId: Long, dstUin: Long): String {
+        return super.getGroupVoiceDownloadUrl(bot, md5, groupId, dstUin)
+    }*/
+
+    @Suppress("RETURN_TYPE_MISMATCH_ON_OVERRIDE")
+    override fun newFriend(bot: Bot, friendInfo: FriendInfo): Friend {
+        bot.mock()
+        return MockFriendImpl(
+            bot.coroutineContext,
+            bot,
+            friendInfo.uin,
+            friendInfo.nick,
+            friendInfo.remark,
+        )
+    }
+
+    @Suppress("RETURN_TYPE_MISMATCH_ON_OVERRIDE")
+    override fun newStranger(bot: Bot, strangerInfo: StrangerInfo): Stranger {
+        bot.mock()
+        return MockStrangerImpl(
+            bot.coroutineContext,
+            bot,
+            strangerInfo.uin,
+            strangerInfo.remark,
+            strangerInfo.nick,
+        )
+    }
+
+    override fun createImage(imageId: String): Image {
+        if (imageId matches Image.IMAGE_ID_REGEX) {
+            return MockImage(imageId, "image/" + imageId.substring(1..36))
+        }
+        //imageId.substring(1..36)
+        return super.createImage(imageId)
     }
 }

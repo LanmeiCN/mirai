@@ -379,7 +379,7 @@ internal class MockBotTest {
     //<editor-fold defaultstate="collapsed" desc="Utils">
     @AfterEach
     internal fun destroy() {
-        bot.destroy()
+        bot.close()
     }
 
     internal inline fun <reified T> assertIsInstance(value: Any?, block: T.() -> Unit = {}) {

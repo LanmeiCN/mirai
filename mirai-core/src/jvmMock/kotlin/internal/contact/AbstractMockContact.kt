@@ -23,7 +23,6 @@ import net.mamoe.mirai.mock.MockBot
 import net.mamoe.mirai.mock.contact.MockContact
 import net.mamoe.mirai.mock.utils.dropAndClose
 import net.mamoe.mirai.utils.*
-import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.CoroutineContext
 
 internal abstract class AbstractMockContact(
@@ -56,11 +55,14 @@ internal abstract class AbstractMockContact(
     }
 
 
-    override suspend fun uploadImage(resource: ExternalResource): Image = resource.inResource {
-        val imageType = resource.formatName
-        val imgId = generateImageId(resource.md5, imageType)
+    override suspend fun uploadImage(resource: ExternalResource): Image {
+        val md5 = resource.md5
+        val format = resource.formatName
 
-        return Image(imgId)
+        val id = bot.tmpFsServer.uploadFile(resource)
+        val bindPath = "image/" + generateUUID(md5)
+        bot.tmpFsServer.bindFile(id, bindPath)
+        return MockImage(generateImageId(md5, format), bindPath)
     }
 
     override fun toString(): String {

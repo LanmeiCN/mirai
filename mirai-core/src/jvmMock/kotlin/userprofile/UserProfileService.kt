@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.mamoe.kjbb.JvmBlockingBridge
 import net.mamoe.mirai.data.UserProfile
+import net.mamoe.mirai.utils.runBIO
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -31,16 +32,16 @@ public interface UserProfileService {
     }
 }
 
-@Suppress("CONFLICTING_OVERLOADS", "ILLEGAL_JVM_NAME", "INAPPLICABLE_JVM_NAME")
+@Suppress("ILLEGAL_JVM_NAME", "INAPPLICABLE_JVM_NAME")
 public interface UserProfileServiceJ : UserProfileService {
     override suspend fun doQueryUserProfile(id: Long): UserProfile {
-        return withContext(Dispatchers.IO) {
+        return runBIO {
             doQueryUserProfileJ(id) ?: buildUserProfile { }
         }
     }
 
     override suspend fun putUserProfile(id: Long, profile: UserProfile) {
-        withContext(Dispatchers.IO) {
+        runBIO {
             putUserProfileJ(id, profile)
         }
     }

@@ -9,14 +9,18 @@
 
 package net.mamoe.mirai.mock.internal.contact
 
+import net.mamoe.mirai.Bot
 import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.contact.Member
 import net.mamoe.mirai.contact.PermissionDeniedException
 import net.mamoe.mirai.internal.contact.uin
+import net.mamoe.mirai.internal.message.DeferredOriginUrlAware
 import net.mamoe.mirai.internal.message.OnlineAudioImpl
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.mock.MockBot
 import net.mamoe.mirai.mock.contact.MockGroup
+import net.mamoe.mirai.mock.utils.mock
+import net.mamoe.mirai.mock.utils.plusHttpPath
 import net.mamoe.mirai.utils.ExternalResource
 import net.mamoe.mirai.utils.toUHexString
 
@@ -84,3 +88,11 @@ internal suspend fun ExternalResource.mockImplUploadAudioAsOnline(bot: MockBot):
     )
 }
 
+internal class MockImage(
+    override val imageId: String,
+    private val urlPath: String,
+) : GroupImage(), DeferredOriginUrlAware {
+    override fun getUrl(bot: Bot): String {
+        return bot.mock().tmpFsServer.httpRoot plusHttpPath urlPath
+    }
+}

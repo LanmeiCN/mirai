@@ -13,6 +13,7 @@ import com.google.common.jimfs.Configuration
 import com.google.common.jimfs.Jimfs
 import net.mamoe.kjbb.JvmBlockingBridge
 import net.mamoe.mirai.mock.internal.remotefile.FsServerImpl
+import net.mamoe.mirai.mock.utils.plusHttpPath
 import net.mamoe.mirai.utils.ExternalResource
 import java.io.Closeable
 import java.nio.file.FileSystem
@@ -21,6 +22,7 @@ import java.nio.file.FileSystem
 public interface TmpFsServer : Closeable {
     public val httpRoot: String
     public val fsSystem: FileSystem
+
 
     /**
      * @return resource id
@@ -31,10 +33,12 @@ public interface TmpFsServer : Closeable {
         return getHttpUrl(uploadFile(resource))
     }
 
+    public suspend fun bindFile(id: String, path: String)
+
     public fun startup()
 
     public fun getHttpUrl(id: String): String {
-        return httpRoot + id
+        return httpRoot plusHttpPath id
     }
 
     public companion object {

@@ -174,3 +174,10 @@ public suspend fun MessageReceipt<*>.mockFireRecalled(operator: Contact? = null)
 public suspend fun ExternalResource.mockUploadAsOnlineAudio(bot: MockBot): OnlineAudio {
     return bot.uploadOnlineAudio(this)
 }
+
+public infix fun String.plusHttpPath(subpath: String): String {
+
+    if (this[this.lastIndex] == '/') return this + subpath
+
+    return "$this/$subpath"
+}

@@ -9,6 +9,7 @@
 
 package net.mamoe.mirai.mock.internal
 
+import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.isActive
 import net.mamoe.mirai.Bot
@@ -25,6 +26,7 @@ import net.mamoe.mirai.internal.BotWithComponents
 import net.mamoe.mirai.internal.network.component.ComponentStorage
 import net.mamoe.mirai.internal.network.component.ConcurrentComponentStorage
 import net.mamoe.mirai.internal.network.components.EventDispatcher
+import net.mamoe.mirai.internal.utils.subLogger
 import net.mamoe.mirai.message.data.OnlineAudio
 import net.mamoe.mirai.mock.MockBot
 import net.mamoe.mirai.mock.contact.MockFriend
@@ -38,6 +40,7 @@ import net.mamoe.mirai.mock.internal.contact.MockFriendImpl
 import net.mamoe.mirai.mock.internal.contact.MockGroupImpl
 import net.mamoe.mirai.mock.internal.contact.MockStrangerImpl
 import net.mamoe.mirai.mock.internal.contact.mockImplUploadAudioAsOnline
+import net.mamoe.mirai.mock.internal.remotefile.FsServerImpl
 import net.mamoe.mirai.mock.userprofile.UserProfileService
 import net.mamoe.mirai.mock.utils.NameGenerator
 import net.mamoe.mirai.mock.utils.simpleMemberInfo
@@ -54,7 +57,18 @@ internal class MockBotImpl(
     override val msgDatabase: MessageDatabase,
     override val userProfileService: UserProfileService,
 ) : MockBot, BotWithComponents {
+    private val loginBefore = atomic(false)
+
+    override val logger: MiraiLogger by lazy {
+        configuration.botLoggerSupplier(this)
+    }
+
     init {
+        if (tmpFsServer is FsServerImpl) {
+            tmpFsServer.logger = this.logger.subLogger("TmpFsServer").takeUnless { it == this.logger } ?: kotlin.run {
+                MiraiLogger.Factory.create(TmpFsServer::class.java, "TFS $id")
+            }
+        }
         tmpFsServer.startup()
     }
 
@@ -71,18 +85,20 @@ internal class MockBotImpl(
 
     override suspend fun login() {
         BotOnlineEvent(this).broadcast()
+        if (!loginBefore.compareAndSet(expect = false, update = true)) {
+            BotReloginEvent(this, null).broadcast()
+        }
     }
 
-    override suspend fun doRelogin() {
-        BotReloginEvent(this, null).broadcast()
-        BotOnlineEvent(this).broadcast()
-    }
 
     @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
-    override fun destroy() {
+    override fun close(cause: Throwable?) {
         tmpFsServer.close()
         Bot._instances.remove(id, this)
-        cancel(CancellationException("Bot destroy"))
+        cancel(when (cause) {
+            null -> CancellationException("Bot cancelled")
+            else -> CancellationException(cause.message).also { it.initCause(cause) }
+        })
     }
 
     override val groups: ContactList<MockGroup> = ContactList()
@@ -112,10 +128,6 @@ internal class MockBotImpl(
         return stranger
     }
 
-    override val logger: MiraiLogger by lazy {
-        configuration.botLoggerSupplier(this)
-    }
-
     override val isOnline: Boolean get() = isActive
     override val eventChannel: EventChannel<BotEvent> =
         GlobalEventChannel.filterIsInstance<BotEvent>().filter { it.bot === this@MockBotImpl }
@@ -125,13 +137,6 @@ internal class MockBotImpl(
     }
     override val asStranger: MockStranger by lazy {
         MockStrangerImpl(coroutineContext, this, id, "", nick)
-    }
-
-    override fun close(cause: Throwable?) {
-        cancel(when (cause) {
-            null -> null
-            else -> CancellationException(cause.message).also { it.initCause(cause) }
-        })
     }
 
     override val coroutineContext: CoroutineContext by lazy {
