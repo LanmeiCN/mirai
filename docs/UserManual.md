@@ -18,7 +18,7 @@ Mirai 控制台现在有两个版本，插件在这两个版本的 Mirai Console
 
 ## 使用图形界面版本
 
-前往 [sonder-joker/mirai-compose](https://github.com/sonder-joker/mirai-compose/releases) 下载适合你的系统的压缩包，解压到一个文件就可以使用。
+前往 [sonder-joker/mirai-compose](https://github.com/sonder-joker/mirai-compose/releases) 下载适合你的系统的压缩包，解压到一个文件夹就可以使用。
 
 ## 使用纯控制台版本
 
